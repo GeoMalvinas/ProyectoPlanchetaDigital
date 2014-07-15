@@ -1,0 +1,212 @@
+/******************************************************************************
+ *
+ * Purpose: main styles 
+ * Author:  Armin Burger
+ *
+ ******************************************************************************
+ *
+ * Copyright (c) 2003-2006 Armin Burger
+ *
+ * This file is part of p.mapper.
+ *
+ * p.mapper is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version. See the COPYING file.
+ *
+ * p.mapper is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with p.mapper; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ ******************************************************************************/
+
+/** 
+ * DEFAULTS FOR BODY AND TABLES 
+ */
+ 
+BODY, TH, TD, SELECT, INPUT {
+    font-family: verdana,arial,helvetica,sans-serif;
+    font-size : 11px;
+}
+
+BODY {
+    color: #000000;
+    background : #003366;
+    cursor: default;
+    overflow: hidden;
+}
+     
+TH, TD {
+    text-align: left;
+    color: #000000;
+}
+
+
+A {
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+A:hover {
+    text-decoration: underline;
+}
+
+IMG {
+	border-width: 0px;
+}
+
+
+/** 
+ * TOOL BUTTONS IN TOOLBAR.PHTML 
+ * Used for mouseDown/Up and mouseOver/Out actions 
+ */
+.TOOLBAR {
+    color: #000000; 
+}
+
+.TOOLBARTD{
+}
+
+
+.TOOLBARTD_OFF{
+    padding: 2px;
+    text-align:center;
+    vertical-align:middle;
+    width: 24px;
+    height: 24px;
+    /*border:   1px solid #B1BBC5;*/
+}
+
+.TOOLBARTD_ON{
+    padding: 1px 1px 1px 1px;
+    width: 24px;
+    height: 24px;
+    overflow: hide;
+    text-align:center;
+    vertical-align:middle;
+    background-color: #CCCCCC;   
+    border-top:    1px solid #666666;
+    border-bottom: 1px solid #F0F0F0;
+    border-right:  1px solid #F0F0F0;
+    border-left:   1px solid #666666;   
+    /*border: 1px inset;*/
+}                
+
+.TOOLBARTD_OVER{
+    padding: 1px 1px 1px 1px;
+    width: 24px;
+    height: 24px;
+    overflow: hide;
+    text-align:center;
+    vertical-align:middle;
+    border-top:    1px solid #F0F0F0;
+    border-bottom: 1px solid #666666;
+    border-right:  1px solid #666666;
+    border-left:   1px solid #F0F0F0;
+}
+
+.TOOLBARTD IMG, .TOOLBARTD_ON IMG, .TOOLBARTD_OVER IMG {
+	border: 0px;
+	vertical-align:middle;
+}
+
+/*** separators ***/
+.tsepv {
+	height: 1px;
+	padding: 1px;
+	vertical-align:middle;
+	border-top: 2px groove #F0F0F0;
+	empty-cells: show;
+}
+.tseph {
+	height: 1px;
+	padding: 1px;
+	border-left: 2px groove #F0F0F0;
+} 
+.tsepspace {
+	height: 1px;
+	padding: 2px;
+	border: none;
+} 
+
+
+
+/** 
+ * TOOL FRAME AROUND MAP AND TOC
+ */
+.TOOLFRAME, .TOC, .infoZone {
+    background-color: #B1BBC5;  
+    color: #000000; 
+    /*border: 1px solid #F0F0F0;*/
+}
+
+.TOOLFRAME TD {
+    color: #000000;    
+    vertical-align:middle;
+}
+
+
+/** 
+ * FRAME FOR HEADER AND FOOTER 
+ */
+.FRAME1 {
+    color: #FFFFFF;
+    font-size: 11px;
+    background-color: #336699;
+    border-top:    1px solid #E0E0E0;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+
+/* HEADING, e.g. in top frame*/
+.HEADING1 {
+    color: #FFFFFF;
+    text-align:left;
+    font-size:16px;
+    font-weight:bold;
+}
+
+
+
+/** 
+ * FORM ELEMENTS 
+ */
+SELECT {
+	background-color : #EBEBEB;
+	width : 100px;
+	padding-left: 5px;
+}
+
+.TOOLFRAME input, .FRAME1 input {
+	background-color : #EBEBEB;
+	border: 1px solid #003366;
+}
+
+/* Input Button colors on/off */
+.TOOLFRAME input.button_on, .FRAME1 input.button_on {
+    background-color : #003366;
+    color: #FFFFFF;
+    border-color: #FFFFFF;
+    border-style: outset;
+}
+
+.TOOLFRAME input.button_off, .FRAME1 input.button_off {
+    background-color : #EBEBEB;
+}
+
+.selectbox {
+	padding-top: 3px;
+}
+
+
+/* ADDITIONAL TABLE TD */
+.TDAL{text-align:left;}
+.TDAR{text-align:right;}
+.TDAC{text-align:center;}
+
+

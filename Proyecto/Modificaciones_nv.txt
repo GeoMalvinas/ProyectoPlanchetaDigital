@@ -1,0 +1,5 @@
+716, 718: <div id="exito" style="display:none">
+		
+		</div>
+
+701: res == 1 por res != 1 

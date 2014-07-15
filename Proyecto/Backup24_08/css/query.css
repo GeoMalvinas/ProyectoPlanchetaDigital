@@ -1,0 +1,185 @@
+/* STYLE FOR QUERY OUTPUT (SEARCH, IDENTIFY, SELECT) */
+
+
+#infoZone {
+    color: #D4D0C8;
+    overflow: auto;
+}
+
+
+#infoZone TABLE {
+    width: 100%;
+    color: #D4D0C8;
+    border-left:  1px solid #D4D0C8;
+    border-bottom:  1px solid #D4D0C8;
+    /*border-top:  1px solid #D4D0C8;*/
+}
+
+
+#infoZone TD {
+    font-size: 10px;
+    text-align: center;
+    color: #000000;
+    background-color: #FBFBFB;
+    padding: 1px 3px 1px 4px;
+    border-top:    1px solid #D4D0C8;
+    border-left:   none;
+    border-right:  1px solid #D4D0C8;
+    border-bottom: none;
+}   
+
+/* Link for zoom to feature */
+#infoZone TD.zoomlink {
+    width: 25px;
+    background-color:#EBEADB;
+    border-top:  1px solid #D4D0C8;
+    border-left: 1px solid #FFFFFF;
+    border-right: 1px solid #ACA899;
+    border-bottom: none;
+}
+
+
+/* FRAME for closing query win */
+#infoZone TABLE.close {
+    border: none;
+}
+
+#infoZone TD.close {
+    text-align: right;
+    background-color:#EBEADB;
+    border-top:  1px solid #D4D0C8;
+    border-left: 1px solid #FFFFFF;
+    border-right: 1px solid #ACA899;
+    border-bottom: none;
+    padding: 1px;
+}
+
+/* Link for zoom to feature */
+.sortable A {
+    color: #000000;
+    text-decoration: underline;
+}
+
+#infoZone img {
+    border: 0;
+    padding: 0px;
+}
+
+
+
+/* TITLE BAR (with close button) */
+.QUERYHEADER TD {
+    background-color: #B1BBC5; 
+    /*background-color: #336699;*/
+}
+
+/* LAYER NAME */
+.LAYERHEADER  {
+    font-weight: bold;
+    text-align: left;
+    padding: 6px 3px 1px 3px;
+}
+
+
+
+/** 
+ * SORTABLE TABLES 
+ */
+ 
+ /* header line with <TH> */
+table.sortable a.sortheader {
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap; 
+    color:#003333;
+    display: block;
+    background-color:#EBEADB;
+    padding: 2px;
+    border-top: 0px solid #FFFFFF;
+    border-left: 1px solid #FFFFFF;
+    border-right: 1px solid #ACA899;
+    border-bottom: 2px solid #D6D2C2;
+}
+
+table.sortable span.sortarrow {
+    color: black;
+    text-decoration: none;
+}
+
+
+/**
+ * Styles related to attribute search
+ */
+.pm_searchtop {
+    position:absolute;
+    left: 0px;
+    top:5px;
+} 
+ 
+.pm_searchtop div {
+    padding:0px 0px 0px 6px;
+    display: inline;
+}
+
+.pm_search div {
+    display: inline;
+    padding-top: 0px;
+}
+
+div.searchitem div { 
+    display: inline;
+    padding-top: 0px;
+    white-space: nowrap;
+    font-size: 11px;
+    vertical-align: middle;
+}
+
+div.searchitem input, select {
+    font-size : 11px;
+    background-color : #EBEBEB;
+	border-color :  #003366;
+	border-width : 1px;
+	padding-top: 1px;
+    padding-left: 2px;
+    vertical-align: middle;
+}
+
+div.search_inline div {
+    display: inline;
+}
+
+
+/**
+ * Style for suggest box
+ */
+div.search_suggest div {
+    display: block;
+}
+
+.suggest_link {
+    background-color: #f3f3f3;
+    padding: 2px 0px 2px 0px;
+    cursor: pointer;
+}
+
+.suggest_link_over {
+    color: #FFFFFF;
+    background-color: #004080;
+    padding: 2px 0px 2px 0px;
+    cursor: pointer;
+}
+
+.search_suggest {
+    position: absolute; 
+    background-color: #f3f3f3; 
+    text-align: left; 
+    border: 1px solid #000000;
+    height: 200px;
+    width: 160px;
+    overflow: auto;
+    visibility: hidden;
+}	
+
+

@@ -1,0 +1,760 @@
+<?php 
+include("seguridad.php");
+// Conexión PostgreSQL.
+
+// Conectarse a una base de datos llamada PLANCHETAS en localhost con user y pass
+$dbconn= pg_connect( "host=localhost dbname=PLANCHETAS user=postgres password=database" );
+if( !$dbconn )
+{
+echo "En estos momentos no funciona el sistema!";
+exit;
+}
+
+//convierto minusculas en mayusculas para consultar sección
+$seccion= strtoupper($_POST[secc]);
+$mza_let= strtoupper($_POST[manz]);
+
+//Hago dinámico el cambio de tablas
+$tbl_parc= parcelas;
+$tbl_manz= manzanas;
+
+// Consulta a la tabla parcpcht2 en geodata.
+// $query = "SELECT superfcat,idmza,parc,z_zonif,lote FROM parce309 NATURAL JOIN parcpcht2  WHERE circunsc = '$_POST[circ]' and secc = '$seccion' and quint = '$_POST[quin]' and fracc = '$_POST[frac]' and manz = '$_POST[manz]' ORDER BY natsortInt(parc)ASC,natsortChar(parc)ASC";
+$query = "SELECT superfcat,parce309.idmza,parce309.parc,parce309.z_zonif,parce309.lote FROM parce309 INNER JOIN parcpcht2 ON(parcpcht2.nomencat = parce309.nomencat) WHERE parcpcht2.circunsc = '$_POST[circ]' and parcpcht2.secc = '$seccion' and parcpcht2.quint = '$_POST[quin]' and parcpcht2.fracc = '$_POST[frac]' and parcpcht2.manz = '$mza_let' ORDER BY natsortInt(parce309.parc)ASC,natsortChar(parce309.parc)ASC";
+$result = pg_exec($dbconn, $query);
+$row = pg_fetch_row($result, 0); // Aca salta error
+$filtro = $row[1]; // Default 1
+$parc = $row[2]; // Default 2
+$superf = $row[0]; // Default 0
+$lote= $row[4]; // Default 4
+
+//determinar el salto de columna en la tabla de parcelas, Consulto la cantidad de registros que  devuelve la consulta, lo divido por dos y lo rendondea
+$filasp = round(count(pg_fetch_all_columns($result, 2))/2);
+
+// Consulta localidad
+$locali = "SELECT DISTINCT localidades.localidad FROM localidades, manzanas WHERE ST_Contains(localidades.the_geom, ((select the_geom from manzanas where idmza = '$filtro')))";
+$local = pg_exec($dbconn, $locali); // Aca salta error
+$locarow = pg_fetch_row($local, 0); // Otro error
+$localidad = $locarow[0];
+
+// Consulta barrio
+$barri = "SELECT DISTINCT barrios.barrio FROM barrios, manzanas WHERE ST_Contains(barrios.the_geom, ((select the_geom from manzanas where idmza = '$filtro')))";
+$barr = pg_exec($dbconn, $barri); // Otro error
+$barrirow = pg_fetch_row($barr, 0); // Otro
+$barrio = $barrirow[0];
+
+//Consulta a la tabla datos según título
+$contitu = "SELECT tcirc, tsecc, tquint, tfracc, tmanz FROM mzatitulo WHERE idmza = '$filtro'";
+$segtitu = pg_exec($dbconn, $contitu); // Otro
+$datos = pg_fetch_row($segtitu, 0); // Otro
+$tcirc = $datos[0];
+$tsecc = $datos[1];
+$tquin = $datos[2];
+$tfrac = $datos[3];
+$tmanz = $datos[4]; //Comente esto yo Facu
+
+//Defino variables globales para actualizar la tabla de nomenclatura según título
+$_SESSION["idmza"]=$filtro;
+$_SESSION["tcircuns"]=$tcirc;
+$_SESSION["tsecci"]=$tsecc;
+$_SESSION["tqui"]=$tquin;
+$_SESSION["tfracci"]=$tfrac;
+$_SESSION["tmanzan"]=$tmanz;
+
+//Consulta a la tabla de calles para imprimir infraestructura
+$inf_q = "select distinct ccalle,nombre,agua,gas,cloaca,calzada from calles,(SELECT st_buffer((
+select the_geom from manzanas where idmza = '$filtro'), 30)  as manz) AS FOO where manz ~ calles.the_geom order by nombre";
+$infracalle = pg_exec($dbconn, $inf_q); // Otro
+$inf_cal = pg_fetch_row($infracalle, 0); // Otro
+$ccall = $inf_cal[0];
+$nombcal = $inf_cal[1];
+$agua = $inf_cal[2];
+$gas = $inf_cal[3];
+$cloaca = $inf_cal[4];
+$calzada = $inf_cal[5];
+
+//Obtenemos la distancia a escuelas
+$dist_escuela = "select st_distance( ((select the_geom from esc_pub order by st_distance(the_geom,((select the_geom as geomz from manzanas where idmza = '$filtro'))) limit 1 )), ((select the_geom as geomz from manzanas where idmza = '$filtro')) )";
+$dist_esc = pg_exec($dbconn, $dist_escuela); // Otro
+$desc_row = pg_fetch_row($dist_esc, 0); // Otro
+$descuela = round($desc_row[0]);
+
+//Obtenemos la distancia a centro de salud
+$dist_salud = "select st_distance( ((select the_geom from ctrsalud order by st_distance(the_geom,((select the_geom as geomz from manzanas where idmza = '$filtro'))) limit 1 )), ((select the_geom as geomz from manzanas where idmza = '$filtro')) )";
+$dist_sal = pg_exec($dbconn, $dist_salud); // Otro
+$dsal_row = pg_fetch_row($dist_sal, 0); // Otro
+$dsalud = round($dsal_row[0]);
+
+//Obtenemos la distancia a Estaciones del ferrocarril
+$dist_estffcc = "select st_distance( ((select the_geom from estffcc order by st_distance(the_geom,((select the_geom as geomz from manzanas where idmza = '$filtro'))) limit 1 )), ((select the_geom as geomz from manzanas where idmza = '$filtro')) )";
+$dist_est = pg_exec($dbconn, $dist_estffcc); // Otro
+$dest_row = pg_fetch_row($dist_est, 0); // Otro
+$destffcc = round($dest_row[0]);
+
+//Obtenemos la distancia espacios verdes
+$dist_verde = "select st_distance( ((select the_geom from espverde order by st_distance(the_geom,((select the_geom as geomz from manzanas where idmza = '$filtro'))) limit 1 )), ((select the_geom as geomz from manzanas where idmza = '$filtro')) )";
+$dist_ver = pg_exec($dbconn, $dist_verde); // Otro
+$dver_row = pg_fetch_row($dist_ver, 0); // Otro
+$dverde = round($dver_row[0]);
+
+//Obtenemos la distancia a la delegación
+$dist_delega = "select st_distance( ((select the_geom from delegaciones order by st_distance(the_geom,((select the_geom as geomz from manzanas where idmza = '$filtro'))) limit 1 )), ((select the_geom as geomz from manzanas where idmza = '$filtro')) )";
+$dist_del = pg_exec($dbconn, $dist_delega); // Otro
+$ddel_row = pg_fetch_row($dist_del, 0); // Otro
+$ddelegacion = round($ddel_row[0]);
+
+//Obtenemos la distancia a bomberos
+$dist_bomber = "select st_distance( ((select the_geom from bomberos order by st_distance(the_geom,((select the_geom as geomz from manzanas where idmza = '$filtro'))) limit 1 )), ((select the_geom as geomz from manzanas where idmza = '$filtro')) )";
+$dist_bom = pg_exec($dbconn, $dist_bomber); // Otro
+$dbom_row = pg_fetch_row($dist_bom, 0); // Otro
+$dbomberos = round($dbom_row[0]);
+
+//Obtenemos la distancia a la comisaria
+$dist_policia = "select st_distance( ((select the_geom from comisarias order by st_distance(the_geom,((select the_geom as geomz from manzanas where idmza = '$filtro'))) limit 1 )), ((select the_geom as geomz from manzanas where idmza = '$filtro')) )";
+$dist_pol = pg_exec($dbconn, $dist_policia); // Otro
+$dpol_row = pg_fetch_row($dist_pol, 0); // Otro
+$dpolicia = round($dpol_row[0]);
+
+//Distancia a calles con transporte público
+$dist_transp =  "select st_distance( ((select the_geom from calles where transpub = 'SI' order by st_distance(the_geom,((select the_geom as geomz from manzanas where idmza = '$filtro'))) limit 1 )), ((select the_geom as geomz from manzanas where idmza = '$filtro')) )";
+$dist_trans = pg_exec($dbconn, $dist_transp); // Otro
+$dtran_row = pg_fetch_row($dist_trans, 0); // Otro
+$dtransporte = round($dtran_row[0]);
+
+//Ubicación del map file
+$map_path="/var/www/plcht_dgtl/map";
+$map = ms_newMapObj($map_path."/planchetas1.map");
+
+//para filtrar las parcelas
+$layer= $map->getLayerByName('Parcelas');
+$clasp = $layer->getClass(0);
+$clasp->setExpression($filtro);
+
+//para filtrar medidas
+$layer1= $map->getLayerByName('Medidas');
+$clasm = $layer1->getClass(0);
+$clasm->setExpression($filtro);
+
+//para filtrar altura domiciliaria
+$layer2= $map->getLayerByName('Altdom');
+$clasa = $layer2->getClass(0);
+$clasa->setExpression($filtro);
+
+//filtrar circulos alrededor de etiqueta de parcelas
+$circ= $map->getLayerByName('circulo');
+$clasc = $circ->getClass(0);
+$clasc->setExpression($filtro);
+
+// Consulta a la tabla manzanas en geodata para el zoom.
+$querybox = "SELECT minx,miny,maxx,maxy FROM manzanas WHERE idmza= '$filtro';";
+$resultbox = pg_exec ($dbconn, $querybox); // Otro
+$bbox= pg_fetch_row($resultbox, 0); // Otro
+$minx= $bbox[0];
+$miny= $bbox[1];
+$maxx= $bbox[2];
+$maxy= $bbox[3];
+
+//Consulta a la tabla manzanas para obtener la rotación
+$queryangle = "SELECT ang_ppal FROM manzanas WHERE idmza ='$filtro'";
+$resultangle = pg_exec ($dbconn, $queryangle); // Otro
+$angle = pg_fetch_row($resultangle, 0); // Otro
+$angulo = $angle[0];
+
+
+//Rotar norte
+$norte = $map->getLayerByName('North');
+$clasnort = $norte->getClass(0);
+$estilonorte = $clasnort->getStyle(0);
+//la propiedad a modificar, en este caso angle, tiene que estar en minúscula
+$estilonorte->set(angle, -"$angulo");
+
+//Consulta a la tabla manzanas para obtener el centroide
+$querycenter = "SELECT x_cent,y_cent FROM manzanas WHERE idmza ='$filtro'";
+$resultcenter = pg_exec ($dbconn, $querycenter); // Otro
+$center = pg_fetch_row($resultcenter, 0); // Otro
+$cent_x = $center[0];
+$cent_y = $center[1];
+
+// Consulta a la tabla planos.
+$queryplanos = "SELECT tipo_pl,prefijo,nroplano,ano,afecta FROM planos WHERE idmza= '$filtro' ORDER BY ano;";
+$resultplanos = pg_exec ($dbconn, $queryplanos); // Otro
+$planos= pg_fetch_row($resultplanos, 0); // Otro
+$tipopl= $planos[0];
+$prefijo= $planos[1];
+$nroplano= $planos[2];
+$ano= $planos[3];
+$afecta= $planos[4];
+
+//determinar el salto de columna en la tabla de planos
+$saltop = round(count(pg_fetch_all_columns($resultplanos, 2))/2); // Otro
+
+//Extensión de la vista a la manzana 
+$map->setextent($minx,$miny,$maxx,$maxy); // Otro, exception
+
+//Construyo el falso extent de la imagen que no existe
+$recuadro = new rectObj();
+$recuadro->setextent($minx,$miny,$maxx,$maxy);
+
+//Construyo el punto con el centro de la imagen que no existe
+$punto= ms_newPointObj();
+$punto->setXY(400,235);
+
+//Consulto la escala para la manzana
+$escala = "select escala from manzanas where idmza = '$filtro'";
+$escal = pg_exec($dbconn, $escala);
+$escarow = pg_fetch_row($escal, 0);
+$zoom = $escarow[0];
+
+//Con el zoomScale defino: escala, punto donde se centra la imagen original, ancho de la img original, alto de img origianl, extent que abarca la img original)
+$map->zoomScale($zoom,$punto,800,471,$recuadro);
+
+//Asigno el ángulo para girar la vista
+$map->setRotation($angulo);
+
+//Obtengo la escala para imprimir en pantalla.
+$esca = $map->scaledenom;
+$escala_1 = round($esca,0);
+
+//dibujar mapa
+$image=$map->draw();
+$image_url=$image->saveWebImage();
+$map->save('/var/www/tmp/temp.map');
+//$escala=$map->drawScaleBar();
+//$escala_url=$escala->saveWebImage();
+
+?>
+<!DOCTYPE html>
+<HTML lang="es">
+ <HEAD>
+  <TITLE> Plancheta Digital - Municipalidad de Malvinas Argentinas </TITLE>
+	<link rel="icon" href="img/icon.gif" type="image/x-icon" />  
+	<link rel="shortcut icon" href="img/icon.gif" type="image/x-icon" />
+	<link rel="STYLESHEET" type="text/css" href="css/estilorecuadros.css" media="screen">
+	<link rel="STYLESHEET" type="text/css" href="css/tablas.css" media="screen">
+	<link rel="STYLESHEET" type="text/css" href="css/imprimirbis.css" media="print" >
+	<link href="css/portfolio-item.css" rel="stylesheet" media="screen">
+	
+	<meta charset="iso-8859-1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.png">
+        <!-- Bootstrap core CSS -->
+    <link href="bootstrap3/dist/css/bootstrap.css" rel="stylesheet" media="screen">
+        <!-- Custom styles for this template -->
+    <link href="starter-template.css" rel="stylesheet" media="screen">
+	<link href="css/zoom.css" rel="stylesheet" media="screen">
+	<style type="text/css" media="screen">
+            html, body {
+                margin: 0;
+                width: 100%;
+                height: 100%;
+            }
+	</style>
+	<script src="jquery-2.1.0.min.js"></script>
+ </HEAD>
+<BODY>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">PLANCHETAS</a>
+        </div>
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav nav-tabs">
+            <li class="active"><a href="http://10.10.1.198/plcht_dgtl/htdocs/">Inicio</a></li>
+            <li><a href="#info" data-toggle="tab">Info</a></li>
+            <li><a href="#contacto" data-toggle="tab">Contacto</a></li>
+          </ul>
+		  <div >
+			<a class="navbar-brand pull-right" align= "right">Dirección General de Planeamiento</a>				
+		  </div>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+    <div class="container">
+	<div class="col-lg-18">
+		<table class="table table-striped">
+			<tr>
+			 <td>
+				<B class="">Malvinas Argentinas</B>
+			 </td>
+			 <td>	
+				<B class="">CATASTRO PARCELARIO</B>
+			 </td>
+			 <td>
+				<label>Localidad: </label><class="admin"> <? echo "$localidad"; ?>
+			 </td>
+			 <td>				
+				<label>Barrio: </label><class="admin"> <? echo "$barrio"; ?>
+			 </td>
+			 <td>
+				<label>Id-Mza:</label><class="admin"> <? echo "$filtro"; ?>
+			 </td>
+			</tr>
+		</table>
+
+	</div>	
+      
+	<div class="row">
+
+	<div class="col-md-8">
+	
+	<figure tabindex="1">
+			<img src="<? echo $image_url; ?>" alt="jump, matey" />
+	</figure>
+			<label>Escala: </label><class="admin"> <? echo "1:$escala_1";?>
+	 </div> 
+	 <div class="col-md-3 arriba"> 
+	 <table class="table table-condensed">
+	  <tr>
+	   <td colspan="2">
+	    <P>NOMENCLATURA SEGÚN:</P>
+	   </td>
+	  </tr>
+	  <tr>
+	   <td width="50%">
+	    <P>TÍTULO</p>
+	   </td>
+	   <td width="50%">
+	    <P>CATASTRO</p>
+	   </td>
+	  </tr>
+	  <tr>
+	   <td>
+		<table class="table table-condensed table-striped" id="tabla">
+			<tr>
+				 <td><label>Circ:</label> </td>
+				 <td><B><? echo "$tcirc"; ?></B></td>
+			</tr>
+			<tr>
+				 <td><label>Secc:</label> </td>
+				 <td><B><? echo "$tsecc"; ?></B></td>
+			</tr>
+			<tr>
+				<td> <label>Quinta:</label> </td>
+				<td> <B><? echo "$tquin"; ?></B></td>
+			</tr>
+			<tr>
+				<td><label>Fracc:</label> </td>
+				<td><B><? echo "$tfrac"; ?></B></td>
+			</tr>
+			<tr>
+				<td><label>Manz.:</label> </td>
+				<td><B><? echo "$tmanz"; ?></B></td>
+			</tr>
+		</table>
+	   </td>
+	   <td>
+		<table class="table table-condensed table-striped" id="tabla">
+			<tr>
+				 <td><label>Circ:</label> </td>
+				 <td><B><? echo "$_POST[circ]"; ?></B></td>
+			</tr>
+			<tr>
+				 <td><label>Secc:</label> </td>
+				 <td><B><? echo "$seccion"; ?></B></td>
+			</tr>
+			<tr>
+				<td> <label>Quinta:</label> </td>
+				<td> <B><? echo "$_POST[quin]"; ?></B></td>
+			</tr>
+			<tr>
+				<td><label>Fracc:</label> </td>
+				<td><B><? echo "$_POST[frac]"; ?></B></td>
+			</tr>
+			<tr>
+				<td><label>Mza:</label> </td>
+				<td><B><? echo "$mza_let"; ?></B></td>
+			</tr>
+		</table>
+	   </td>
+	  </tr>
+	 </table>
+	 </div>
+	 	  <div class="col-md-3 abajo">
+				 
+				 <?PHP
+					   if(!$row)
+					     {
+					    echo "Nomenclatura inexistente!";
+					    exit;
+					     }
+					   else
+					     {	
+						 ?>
+				 <TABLE class="table table-condensed">
+				  <TBODY>
+					<TR height="4%">
+					  <TD width="9%" align="right">Parc</TD>
+					  <TD width="9%" align="right">Lote</TD>
+					  <TD width="23%" align="center">Sup.</TD>
+					  <TD width="9%" align="right">Zon.</TD>
+					  <TD width="9%" align="right">Parc</TD>
+					  <TD width="9%" align="right">Lote</TD>
+					  <TD width="23%" align="center">Sup.</TD>
+					  <TD width="9%" align="right">Zon.</TD>
+					</TR>
+					<TR height="95%">
+					  <TD colspan="4" valign="top">
+						<TABLE class="table table-condensed table-striped table-hover">				
+						<?PHP
+						$imp= pg_fetch_array($result,NULL,PGSQL_NUM);
+							$parcela= pg_fetch_all_columns($result, 2);
+							$lote= pg_fetch_all_columns($result, 4);
+							$superficie= pg_fetch_all_columns($result, 0);
+							$zonif= pg_fetch_all_columns($result, 3);
+					   $mitadparc = pg_num_rows($result) / 2;
+					   
+						for ($i = 0; $i < count($parcela) AND $i <= $filasp-1; $i++)
+				         {
+							$parce = pg_fetch_result($result, $i, 2);
+							$lotes = pg_fetch_result($result, $i, 4);
+							$superf = number_format(pg_fetch_result($result, $i, 0), 2, ",", ".");
+							$zonifi = pg_fetch_result($result, $i, 3);
+						  
+						?>
+						 <TR height="3%">
+						  <TD width="18%" align="right"><?php echo $parce; ?></TD>
+						  <TD width="18%" align="right"><?php echo $lotes; ?></TD>
+						  <TD width="45%" align="right"><?php echo $superf; ?></TD>
+						  <TD width="18%" align="right"><?php echo $zonifi; ?></TD>
+						 </TR>
+						<?php
+						}
+					?>
+						</TABLE>
+					  </TD>
+					  <TD colspan="4" valign="top">
+						<TABLE class="table table-condensed table-striped table-hover">
+					<?
+						for ($i = $filasp; $i < count($parcela) AND $i >= $filasp; $i++)
+				         {
+						  $parce = pg_fetch_result($result, $i, 2);
+						  $lotes = pg_fetch_result($result, $i, 4);
+						  $superf = number_format(pg_fetch_result($result, $i, 0), 2, ",", ".");
+						  $zonifi = pg_fetch_result($result, $i, 3);
+					?>
+						 <TR>
+						  <TD width="18%" align="right"><?php echo $parce; ?></TD>
+						  <TD width="18%" align="right"><?php echo $lotes; ?></TD>
+						  <TD width="45%" align="right"><?php echo $superf; ?></TD>
+						  <TD width="18%" align="right"><?php echo $zonifi; ?></TD>
+					     </TR>
+					
+					 <?php
+
+				         }
+						 
+					 ?>
+						 
+						</TABLE>
+					  </TD>
+					 </TR>
+					</TBODY>
+				</TABLE>
+					<?
+					}
+					?>
+	  </div>
+	</div>
+
+	<div class="row"> <!-- los labels correspondientes -->
+	  	<div class="col-md-5 infra"> <!-- -->
+			<table class="table table-striped">
+			<th>				
+				<label>INFRAESTRUCTURA</label><class="admin">
+			 </th>
+			</table>
+		</div>
+	  	<div class="col-md-2 equip">
+			<table class="table table-striped">
+			<th>
+
+				<label>EQUIPAMIENTO y DISTANCIA</label><class="admin">
+
+			</th>
+			</table>
+		</div>
+		<div class="col-md-5 plan">
+			<table class="table table-striped">
+			<td>				
+				<label>PLANOS</label><class="admin">
+			 </td>
+			</table>
+		</div>	
+	</div>
+	<div class="row"> <!-- las tablas correspondientes -->
+	  	<div class="col-md-5 infratable">
+		 <table class="table table-striped">
+
+					<tr>
+					  <td width="10%" align="right">Código</td>
+					  <td width="43%" align="right">Nombre</td>
+					  <td width="10%" align="right">Agua</td>
+					  <td width="10%" align="right">Gas</td>
+					  <td width="10%" align="right">Cloaca</td>
+					  <td width="17%" align="right">Calzada</td>
+					</tr>
+					<tr>
+					  <td colspan="6">
+					     <table class="table table-condensed table-striped">				
+						<?PHP
+						$imp= pg_fetch_array($infracalle,NULL,PGSQL_NUM);
+							$ccal= pg_fetch_all_columns($infracalle, 0);
+							$nomcal= pg_fetch_all_columns($infracalle, 1);
+							$agu_a= pg_fetch_all_columns($infracalle, 2);
+							$ga_s= pg_fetch_all_columns($infracalle, 3);
+							$cloa_ca= pg_fetch_all_columns($infracalle, 4);
+							$calza_da= pg_fetch_all_columns($infracalle, 5);
+					   
+						for ($i = 0; $i < count($ccal) AND $i <= 10; $i++)
+				         {
+							$ccall = pg_fetch_result($infracalle, $i, 0);
+							$nombcal = pg_fetch_result($infracalle, $i, 1);
+							$agua = pg_fetch_result($infracalle, $i, 2);
+							$gas= pg_fetch_result($infracalle, $i, 3);
+							$cloaca= pg_fetch_result($infracalle, $i, 4);
+							$calzada= pg_fetch_result($infracalle, $i, 5);
+						  
+						?>
+						 <tr>
+						  <td width="10%" align="right"><?php echo $ccall; ?></td>
+						  <td width="43%" align="right"><?php echo $nombcal; ?></td>
+						  <td width="10%" align="right"><?php echo $agua; ?></td>
+						  <td width="10%" align="right"><?php echo $gas; ?></td>
+						  <td width="10%" align="right"><?php echo $cloaca; ?></td>
+						  <td width="17%" align="right"><?php echo $calzada; ?></td>
+						 </tr>
+						<?php
+						}
+					?>
+						</table>
+					  </td>
+					 </tr>
+
+		 </table>
+		</div>
+	  	<div class="col-md-2 equiptable">
+
+				<table class="table table-condensed table-striped" width = "100%">
+				<tr>
+							
+					<td>Centro de salud:</td>
+							
+					<td><? echo "$dsalud"; ?></td>
+				</tr>
+				<tr>
+							
+					<td>Escuela:</td>
+							
+					<td><? echo "$descuela"; ?></td>
+				</tr>
+				<tr>
+							
+					<td>Estación FF.CC.:</td>
+							
+					<td><? echo "$destffcc"; ?></td>
+				</tr>
+				<tr>
+							
+					<td>Espacio verde:</td>
+							
+					<td><? echo "$dverde"; ?></td>
+				</tr>
+				<tr>
+							
+					<td>Delegación:</td>
+							
+					<td><? echo "$ddelegacion"; ?></td>
+				</tr>
+				<tr>
+							
+					<td>Bomberos:</td>
+							
+					<td> <? echo "$dbomberos"; ?></td>
+				</tr>
+				<tr>
+							
+					<td>Comisaría:</td>
+							
+					<td><? echo "$dpolicia"; ?></td>
+				</tr>
+				<tr>
+							
+					<td>Colectivo:</td>
+							
+					<td><? echo "$dtransporte"; ?></td>
+				</tr>
+				</table>
+
+		</div>
+	  <div class="col-md-5 plantable">
+				 <table class="table table-condensed">
+
+					<tr>
+					  <td width="18%" align="right">Tipo</td>
+					  <td width="18%" align="right">Nro-Plano</td>
+					  <td width="14%" align="right">Afecta</td>
+					  <td width="18%" align="right">Tipo</td>
+					  <td width="18%" align="right">Nro-Plano</td>
+					  <td width="14%" align="right">Afecta</td>
+					</tr>
+					<tr>
+					  <td  colspan="3">
+					       <table class="table table-condensed table-striped table-hover">				
+						<?PHP
+						$imp= pg_fetch_array($resultplanos,NULL,PGSQL_NUM);
+							$tipop= pg_fetch_all_columns($resultplanos, 0);
+							$ptdop= pg_fetch_all_columns($resultplanos, 1);
+							$nrop= pg_fetch_all_columns($resultplanos, 2);
+							$anop= pg_fetch_all_columns($resultplanos, 3);
+							$afectap= pg_fetch_all_columns($resultplanos, 4);
+					   
+						for ($i = 0; $i < count($tipop) AND $i <= $saltop-1; $i++)
+				         {
+							$tipopl = pg_fetch_result($resultplanos, $i, 0);
+							$ptdo = pg_fetch_result($resultplanos, $i, 1);
+							$nropl = pg_fetch_result($resultplanos, $i, 2);
+							$anopl= pg_fetch_result($resultplanos, $i, 3);
+							$afectapl= pg_fetch_result($resultplanos, $i, 4);
+						  
+						?>
+						 <tr>
+						  <td width="18%" align="right"><?php echo $tipopl; ?></td>
+						  <td width="36%" align="right"><?php echo $ptdo."-".$nropl."-".$anopl; ?></td>
+						  <td width="45%" align="right"><?php echo $afectapl; ?></td>
+						 </tr>
+						<?php
+						}
+					?>
+						</table>
+					  </td>
+					  <td  colspan="3">
+						<table class="table table-condensed table-striped table-hover">
+					<?
+						for ($i = $saltop; $i < count($tipop) AND $i >= $saltop; $i++)
+				         {
+							$tipopl = pg_fetch_result($resultplanos, $i, 0);
+							$ptdo = pg_fetch_result($resultplanos, $i, 1);
+							$nropl = pg_fetch_result($resultplanos, $i, 2);
+							$anopl= pg_fetch_result($resultplanos, $i, 3);
+							$afectapl= pg_fetch_result($resultplanos, $i, 4);
+						  
+						?>
+						 <tr>
+						  <td width="18%" align="right"><?php echo $tipopl; ?></td>
+						  <td width="36%" align="right"><?php echo $ptdo."-".$nropl."-".$anopl; ?></td>
+						  <td width="45%" align="right"><?php echo $afectapl; ?></td>
+						 </tr>
+					
+					 <?php
+
+				         }
+						 
+					  pg_Close( $dbconn ); 
+					 ?>
+						 
+						</table>
+					  </td>
+					 </tr>
+
+				</table>
+				
+	 </div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-17">
+				<p>Las medidas estan expresadas en metros.
+				Las distancias son aproximadas.</p>
+			</div>
+		</div>
+	</div>	
+<!-- Button trigger modal -->
+<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+  Editar Nomec. S/T
+</button>
+
+<!-- Para chequear que user modifico los datos  -->
+   <div id="formul" style="float:right">
+	<form id="userdata" method="post">
+        <input type="hidden" name="usern" value="<? echo $_SESSION['usuarioactual']; ?>">
+		<input type="hidden" name="idmza" value="<? echo "$filtro"; ?>">
+		<button type="button" class="btn btn-danger btn-lg" onclick="quienfue(),location.href='http://10.10.1.198/plcht_dgtl/htdocs/cnslt_plncht.phtml';"> OK! </button>
+
+		<script type="text/javascript">
+		 function quienfue() {     // Con esto establecemos la acción por defecto de nuestro botón de enviar.
+				$.post("quienfue.php", $("#userdata").serialize(),function() {}
+			);
+		}
+		</script>
+	</form>
+   </div>
+<!-- Modal Javascript:history.go(0) -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel" style="font-size: 200%;" align="center">Editar nomenclatura SEGÚN TÍTULO</h4>
+      </div>
+      <div class="modal-body"  id="formulario">
+	   <h4 align="center" style="font-size: 200%;">Nomenclatura NUEVA</h4>
+	   <form id="formdata" method="post">
+	   	<input type="text" class="form-control" NAME="tcircuns" value="<? echo $tcirc;?>" placeholder=<? echo "Circunscripción:".$tcirc;?>>
+		<input type="text" class="form-control" NAME="tsecci" placeholder="<? echo "Sección:".$tsecc; ?>">
+	    <input type="text" class="form-control" NAME="tqui" placeholder="<? echo "Quinta:".$tquin; ?>">
+        <input type="text" class="form-control" NAME="tfracci" placeholder="<? echo "Fracción:".$tfrac; ?>">
+        <input type="text" class="form-control" NAME="tmanzan" placeholder="<? echo "Manzana:".$tmanz; ?>">
+		<input type="hidden" name="idmza" value="<? echo "$filtro"; ?>">
+
+		<!--<a href="javascript:location.reload()">Actualizar</a> -->
+		<!-- Javascript:location.reload(); -->
+		<button type="button" class="btn btn-primary" onclick="enviarphp();"  >Actualizar</button>
+		<script type="text/javascript">  
+		 function enviarphp() {     // Con esto establecemos la acción por defecto de nuestro botón de enviar.
+				$.post("actualtitu.php",$("#formdata").serialize(),function(res){
+				$("#formulario").fadeOut("faster");   // Hacemos desaparecer el div "formulario" con un efecto fadeOut lento.
+            
+            if(res != 1){  // Si es Distinto de 1 se va al exito 
+
+                $("#exito").delay(500).fadeIn("faster");      // Si hemos tenido éxito, hacemos aparecer el div "exito" con un efecto fadeIn lento tras un delay de 0,5 segundos.
+            } else {
+                $("#fracaso").delay(500).fadeIn("faster");    // Si no, lo mismo, pero haremos aparecer el div "fracaso"
+					}
+            });
+		}    
+		</script>
+		</form>  
+      </div>	  	
+	  	<div id="exito" style="display:none" >      
+	  		<div id="exito"  style="font-size: 200%;" align="center">
+	  			Sus datos fueron recibidos correctamente :D 
+	  		</div>
+		</div>		
+		<div id="fracaso" style="display:none">			
+			<div id="fracaso" style="font-size: 200%;" align="center" >
+            	Error al modificar datos.
+			</div>
+		</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+      </div>
+	</div>
+   </div>
+ </div>
+</div> <!-- /.container -->
+    <!-- Bootstrap core JavaScript
+    ==================================================
+    Placed at the end of the document so the pages load faster -->
+    <script src="bootstrap3/assets/js/jquery.js"></script>
+    <script src="bootstrap3/dist/js/bootstrap.min.js"></script>
+	<script src="bootstrap3/js/modal.js"></script>
+</BODY>
+</HTML>

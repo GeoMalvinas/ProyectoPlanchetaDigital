@@ -1,0 +1,101 @@
+<?PHP
+// Conexión a PostgreSQL.
+
+$dbconn= pg_Connect( "host=localhost dbname=geodata user=postgres password=database" );
+if( !$dbconn )
+{
+echo "No pudo realizar la conexión!";
+exit;
+}
+// Consulta a la tabla parcpcht en geodata.
+
+$query = "SELECT * FROM parcpcht WHERE circunsc = '$circ' and secc = '$secc' and quint ='0' and fracc = '0' and manz = '$manz';";
+$result = pg_Exec( $dbconn, $query );
+$row = pg_Fetch_Row( $result, 0 );
+$filtro = $row[23];
+$parc = $row[29];
+$superf = $row[2];
+
+
+//definir map file
+$map_path="c:/ms4w/apps/plancheta_digital/map/";
+$map = ms_newMapObj($map_path."/planchetas1.map");
+
+//clase para filtrar las parcelas
+$layer= $map->getLayerByName('Parcelas');
+$clasp = ms_newClassObj($layer);
+$clasp->set("name", "Filtro");
+$clasp->setExpression($filtro);
+//etiquetas de parcelas
+$clasp->label->set("type",MS_TRUETYPE);
+$clasp->label->set("font","arial");
+$clasp->label->set("size","12");
+$clasp->label->set("position", MS_CC);
+$clasp->label->set("antialias", MS_TRUE);
+$clasp->label->set("partials", MS_TRUE);
+$clasp->label->set("force", MS_TRUE);
+$clasp->label->color->setRGB(0, 0, 0);
+
+// estilo para la clase filtro de parcelas
+$style = ms_newStyleObj($clasp);
+$style->set("symbol", 0);
+$style->set("size", 3);
+$style->outlinecolor->setRGB(255,0,0);
+
+//clase para filtrar medidas
+$layer1= $map->getLayerByName('Medidas');
+$clasm = $map->getClassItemByName($layer1);
+$clasm->set("name", "Filtro");
+$clasm->setExpression($filtro);
+//etiquetas de medidas
+$clasm->label->set("type",MS_TRUETYPE);
+$clasm->label->set("font","arial");
+$clasm->label->set("size","7.5");
+$clasm->label->set("position", MS_CC);
+$clasm->label->set("angle", TEXT_ANGLE);
+$clasm->label->set("antialias", MS_TRUE);
+$clasm->label->set("partials", MS_TRUE);
+$clasm->label->set("force", MS_TRUE);
+$clasm->label->color->setRGB(0, 0, 0);
+
+// estilo para la clase filtro de medidas
+$style = ms_newStyleObj($clasm);
+$style->set("symbol", 0);
+$style->set("size", 1);
+$style->color->setRGB(255,255,255);
+
+//Extensión de la vista a la manzana 
+$map->setextent(5612674.523,6184691.462,5612844.786,6184792.799);
+
+//dibujar mapa
+$image=$map->draw();
+$image_url=$image->saveWebImage();
+
+?>
+
+<HTML>
+ <HEAD>
+   <TITLE>Ejemplo 1: Vista de la manzana</TITLE>
+ </HEAD>
+ <BODY>
+   <IMG SRC="<? echo $image_url; ?>" >
+
+<?PHP
+
+if( !$row)
+{
+echo "No hay datos para esta cuenta!";
+exit;
+}
+else
+{
+echo "Parcela= $parc<BR>";
+echo "Superficie= $superf<BR>";
+
+}
+pg_Close( $dbconn );
+?>
+
+
+ </BODY>
+</HTML>

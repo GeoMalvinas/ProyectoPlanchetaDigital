@@ -1,0 +1,374 @@
+<?php 
+ 
+// Conexión PostgreSQL.
+$dbconn= pg_Connect( "host=localhost dbname=PLANCHETAS user=postgres password=database" );
+if( !$dbconn )
+{
+echo "En estos momentos no funciona el sistema!";
+exit;
+}
+//convierto minusculas en mayusculas para consultar sección
+
+$seccion= strtoupper($_POST[secc]);
+
+$mza_let= strtoupper($_POST[manz]);
+
+// Consulta a la tabla parcpcht en geodata.
+// $query = "SELECT superfcat,idmza,parc,z_zonif,lote FROM parce309 NATURAL JOIN parcpcht  WHERE circunsc = '$_POST[circ]' and secc = '$seccion' and quint = '$_POST[quin]' and fracc = '$_POST[frac]' and manz = '$_POST[manz]' ORDER BY natsortInt(parc)ASC,natsortChar(parc)ASC";
+$query = "SELECT superfcat,parce309.idmza,parce309.parc,parce309.z_zonif,parce309.lote FROM parce309 INNER JOIN parcpcht2 ON(parcpcht2.nomencat = parce309.nomencat) WHERE parcpcht2.circunsc = '$_POST[circ]' and parcpcht2.secc = '$seccion' and parcpcht2.quint = '$_POST[quin]' and parcpcht2.fracc = '$_POST[frac]' and parcpcht2.manz = '$mza_let' ORDER BY natsortInt(parce309.parc)ASC,natsortChar(parce309.parc)ASC";
+$result = pg_Exec($dbconn, $query);
+$row = pg_Fetch_Row($result, 0);
+$filtro = $row[1];
+$parc = $row[2];
+$superf = $row[0];
+$lote= $row[4];
+
+//Consulta a la tabla datos según título
+$contitu = "SELECT tcirc, tsecc, tquint, tfracc, tmanz FROM mzatitulo WHERE idmza = '$filtro'";
+$segtitu = pg_Exec($dbconn, $contitu);
+$datos = pg_Fetch_Row($segtitu, 0);
+$tcirc = $datos[0];
+$tsecc = $datos[1];
+$tquin = $datos[2];
+$tfrac = $datos[3];
+$tmanz = $datos[4];
+
+//Ubicación del map file
+$map_path="/var/www/plcht_dgtl/map";
+$map = ms_newMapObj($map_path."/planchetas1.map");
+
+//para filtrar las parcelas
+$layer= $map->getLayerByName('Parcelas');
+$clasp = $layer->getClass(0);
+$clasp->setExpression($filtro);
+
+//para filtrar medidas
+$layer1= $map->getLayerByName('Medidas');
+$clasm = $layer1->getClass(0);
+$clasm->setExpression($filtro);
+
+//para filtrar altura domiciliaria
+$layer2= $map->getLayerByName('Altdom');
+$clasa = $layer2->getClass(0);
+$clasa->setExpression($filtro);
+
+//filtrar circulos alrededor de etiqueta de parcelas
+$circ= $map->getLayerByName('circulo');
+$clasc = $circ->getClass(0);
+$clasc->setExpression($filtro);
+
+// Consulta a la tabla manzanas en geodata para el zoom.
+$querybox = "SELECT minx,miny,maxx,maxy FROM manzanas WHERE idmza= '$filtro';";
+$resultbox = pg_exec ($dbconn, $querybox);
+$bbox= pg_Fetch_Row($resultbox, 0);
+$minx= $bbox[0];
+$miny= $bbox[1];
+$maxx= $bbox[2];
+$maxy= $bbox[3];
+
+// Consulta a la tabla planos.
+$queryplanos = "SELECT tipo_pl,prefijo,nroplano,ano,afecta FROM planos WHERE idmza= '$filtro' ORDER BY ano;";
+$resultplanos = pg_exec ($dbconn, $queryplanos);
+$planos= pg_Fetch_Row($resultplanos, 0);
+$tipopl= $planos[0];
+$prefijo= $planos[1];
+$nroplano= $planos[2];
+$ano= $planos[3];
+$afecta=  $planos[4];
+
+//Extensión a la vista a la manzana 
+$map->setextent($minx,$miny,$maxx,$maxy);
+$map->setRotation(302.5); //Reemplazar el número por una variable proveniente de la base de manzanas.
+
+//Construcción de la consulta a localidades por punto (Centroide de la manzana)
+//$constcentr = "select st_asewkt(st_centroid ((SELECT the_geom FROM manzanas WHERE idmza= $filtro)))";
+//$centroexe= pg_Exec($dbconn, $constcentr);
+//$centroarr = pg_fetch_row($centroexe, 0);
+//$centroide = $centroarr[0];
+
+
+
+//dibujar mapa
+$image=$map->draw();
+$image_url=$image->saveWebImage();
+$escala=$map->drawScaleBar();
+$escala_url=$escala->saveWebImage();
+
+$punto= ms_newPointObj();
+$punto->setXY($maxx-10, $maxy-10)==MS_FAILURE;
+$punto->draw($map,$layer1,$image,0,'texto');
+
+//$qloca = $map->GetLayerByName('Localidades');
+//$qloca->QueryByPoint($punto,MS_SINGLE,-1);
+
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+ <HEAD>
+  <TITLE> Plancheta Digital - Municipalidad de Malvinas Argentinas </TITLE>
+	<link rel="icon" href="img/icon.gif" type="image/x-icon" />  
+	<link rel="shortcut icon" href="img/icon.gif" type="image/x-icon" />
+	<link rel="STYLESHEET" type="text/css" href="css/estiloplanc.css">
+	<link rel="STYLESHEET" type="text/css" media="print" href="css/imprimir.css"> 
+ </HEAD>
+<BODY>
+	<div id="encabezado">
+		<table class="bordes">
+			<tr>
+			 <td class="encab-izq">
+				<B class="munic">Municipalidad de Malvinas Argentinas</B><br>
+				<label>Dirección Gral. de Planeamiento - Dirección de Catastro</label>
+			 </td>
+			 <td class="encab-med">	
+				<B class="titulo-grande">CATASTRO PARCELARIO</B>
+			 </td>
+			 <td class="encab-deri">
+				<label>Localidad:</label><B height="22px">Grand Bourg<? echo "$qloca"; ?></B><br>
+				<label>Barrio: </label><B height="20px">Pami</B>
+			 </td>
+			 <td class="encab-derd">
+				<label>Id-Mza:<br><B><? echo "$filtro"; ?></B></label>
+			 </td>
+			</tr>
+		</table>
+	</div>	
+	<div id="imagen" align="center">
+				 <IMG SRC="<? echo $image_url; ?>" height="98%"><BR>
+	</div>
+   <div id="datoscatit">
+	<div id="manzana">
+	 <table class="bordes">
+	  <tr>
+	   <td width="49%">
+	    <P class="titulo_item">Título</p>
+	   </td>
+	   <td width="49%">
+	    <P class="titulo_item">Catastro</p>
+	   </td>
+	  </tr>
+	  <tr>
+	   <td>
+		<table id="tabla-izq">
+			<tr>
+				 <td><label>Circ:</label> </td>
+				 <td><B><? echo "$tcirc"; ?></B></td>
+			</tr>
+			<tr>
+				 <td><label>Secc:</label> </td>
+				 <td><B><? echo "$tsecc"; ?></B></td>
+			</tr>
+			<tr>
+				<td> <label>Quinta:</label> </td>
+				<td> <B><? echo "$tquin"; ?></B></td>
+			</tr>
+			<tr>
+				<td><label>Fracc:</label> </td>
+				<td><B><? echo "$tfrac"; ?></B></td>
+			</tr>
+			<tr>
+				<td><label>Mza s/Tit.:</label> </td>
+				<td><B><? echo "$tmanz"; ?></B></td>
+			</tr>
+		</table>
+	   </td>
+	   <td>
+		<table id="tabla-der">
+			<tr>
+				 <td><label>Circ:</label> </td>
+				 <td><B><? echo "$_POST[circ]"; ?></B></td>
+			</tr>
+			<tr>
+				 <td><label>Secc:</label> </td>
+				 <td><B><? echo "$seccion"; ?></B></td>
+			</tr>
+			<tr>
+				<td> <label>Quinta:</label> </td>
+				<td> <B><? echo "$_POST[quin]"; ?></B></td>
+			</tr>
+			<tr>
+				<td><label>Fracc:</label> </td>
+				<td><B><? echo "$_POST[frac]"; ?></B></td>
+			</tr>
+			<tr>
+				<td><label>Mza:</label> </td>
+				<td><B><? echo "$mza_let"; ?></B></td>
+			</tr>
+		</table>
+	   </td>
+	  </tr>
+	 </table>
+	</div>
+
+	<div id="parcelas">
+				 
+				 <?PHP
+					   if(!$row)
+					     {
+					    echo "Nomenclatura inexistente!";
+					    exit;
+					     }
+					   else
+					     {	
+						 ?>
+				 <TABLE id="tabla-parc" class="bordes">
+				  <TBODY>
+					<TR border="solid">
+					  <TD width="9%" align="right">Parc</TD>
+					  <TD width="9%" align="right">Lote</TD>
+					  <TD width="23%" align="center">Sup.</TD>
+					  <TD width="9%" align="right">Zon.</TD>
+					  <TD width="9%" align="right">Parc</TD>
+					  <TD width="9%" align="right">Lote</TD>
+					  <TD width="23%" align="center">Sup.</TD>
+					  <TD width="9%" align="right">Zon.</TD>
+					</TR>
+					<TR>
+					  <TD colspan="4" valign="top">
+						<TABLE id="tabla-izq" width="100%">				
+						<?PHP
+						$imp= pg_fetch_array($result,NULL,PGSQL_NUM);
+							$parcela= pg_fetch_all_columns($result, 2);
+							$lote= pg_fetch_all_columns($result, 4);
+							$superficie= pg_fetch_all_columns($result, 0);
+							$zonif= pg_fetch_all_columns($result, 3);
+					   $mitadparc = pg_num_rows($result) / 2;
+					   
+						for ($i = 0; $i < count($parcela) AND $i <= 20; $i++)
+				         {
+							$parce = pg_fetch_result($result, $i, 2);
+							$lotes = pg_fetch_result($result, $i, 4);
+							$superf = pg_fetch_result($result, $i, 0);
+							$zonifi = pg_fetch_result($result, $i, 3);
+						  
+						?>
+						 <TR>
+						  <TD width="18%" align="right"><?php echo $parce; ?></TD>
+						  <TD width="18%" align="right"><?php echo $lotes; ?></TD>
+						  <TD width="45%" align="right"><?php echo $superf; ?></TD>
+						  <TD width="18%" align="right"><?php echo $zonifi; ?></TD>
+						 </TR>
+						<?php
+						}
+					?>
+						</TABLE>
+					  </TD>
+					  <TD colspan="4" valign="top">
+						<TABLE id="tabla-der" width="100%">
+					<?
+						for ($i = 21; $i < count($parcela) AND $i >= 21; $i++)
+				         {
+						  $parce = pg_fetch_result($result, $i, 2);
+						  $lotes = pg_fetch_result($result, $i, 4);
+						  $superf = pg_fetch_result($result, $i, 0);
+						  $zonifi = pg_fetch_result($result, $i, 3);
+					?>
+						 <TR>
+						  <TD width="18%" align="right"><?php echo $parce; ?></TD>
+						  <TD width="18%" align="right"><?php echo $lotes; ?></TD>
+						  <TD width="45%" align="right"><?php echo $superf; ?></TD>
+						  <TD width="18%" align="right"><?php echo $zonifi; ?></TD>
+					     </TR>
+					
+					 <?php
+
+				         }
+						 
+					 ?>
+						 
+						</TABLE>
+					  </TD>
+					 </TR>
+					</TBODY>
+				</TABLE>
+					<?
+					}
+					?>
+	</div>
+  </div>
+ <div id="pie"> 
+  <TABLE>
+   <TR>
+   <TD>
+	<div id="pie_izq">
+				 <TABLE id="tabla-planos" class="bordes">
+				  <TBODY>
+					<TR border="solid">
+					  <TD width="9%" align="left">Tipo</TD>
+					  <TD width="9%" align="lett">Nro-Plano</TD>
+					  <TD width="23%" align="left">Afecta</TD>
+					  <TD width="9%" align="left">Tipo</TD>
+					  <TD width="9%" align="left">Nro-Plano</TD>
+					  <TD width="23%" align="left">Afecta</TD>
+					</TR>
+					<TR>
+					  <TD colspan="3" valign="top">
+						<TABLE id="plano-izq" width="100%">				
+						<?PHP
+						$imp= pg_fetch_array($resultplanos,NULL,PGSQL_NUM);
+							$tipop= pg_fetch_all_columns($resultplanos, 0);
+							$ptdop= pg_fetch_all_columns($resultplanos, 1);
+							$nrop= pg_fetch_all_columns($resultplanos, 2);
+							$anop= pg_fetch_all_columns($resultplanos, 3);
+							$afectap= pg_fetch_all_columns($resultplanos, 4);
+					   
+						for ($i = 0; $i < count($tipop) AND $i <= 5; $i++)
+				         {
+							$tipopl = pg_fetch_result($resultplanos, $i, 0);
+							$ptdo = pg_fetch_result($resultplanos, $i, 1);
+							$nropl = pg_fetch_result($resultplanos, $i, 2);
+							$anopl= pg_fetch_result($resultplanos, $i, 3);
+							$afectapl= pg_fetch_result($resultplanos, $i, 4);
+						  
+						?>
+						 <TR>
+						  <TD width="18%" align="right"><?php echo $tipopl; ?></TD>
+						  <TD width="36%" align="right"><?php echo $ptdo."-".$nropl."-".$anopl; ?></TD>
+						  <TD width="45%" align="right"><?php echo $afectapl; ?></TD>
+						 </TR>
+						<?php
+						}
+					?>
+						</TABLE>
+					  </TD>
+					  <TD colspan="3" valign="top">
+						<TABLE id="plano-der" width="100%">
+					<?
+						for ($i = 6; $i < count($tipop) AND $i >= 6; $i++)
+				         {
+							$tipopl = pg_fetch_result($resultplanos, $i, 0);
+							$ptdo = pg_fetch_result($resultplanos, $i, 1);
+							$nropl = pg_fetch_result($resultplanos, $i, 2);
+							$anopl= pg_fetch_result($resultplanos, $i, 3);
+							$afectapl= pg_fetch_result($resultplanos, $i, 4);
+						  
+						?>
+						 <TR>
+						  <TD width="18%" align="right"><?php echo $tipopl; ?></TD>
+						  <TD width="36%" align="right"><?php echo $ptdo."-".$nropl."-".$anopl; ?></TD>
+						  <TD width="45%" align="right"><?php echo $afectapl; ?></TD>
+						 </TR>
+					
+					 <?php
+
+				         }
+						 
+					  pg_Close( $dbconn ); 
+					 ?>
+						 
+						</TABLE>
+					  </TD>
+					 </TR>
+					</TBODY>
+				</TABLE>
+	</div>
+  </TD>
+  <TD>
+	<div id="pie_der">
+	
+	</div>
+   </TD>
+   </TR>
+  </TABLE>
+ </div>
+</BODY>
+</HTML>

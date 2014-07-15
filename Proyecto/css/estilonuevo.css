@@ -1,0 +1,143 @@
+BODY{
+	background : #F0F0F0;
+}
+
+#encabezado{
+position:absolute;
+top:2px;
+left:2px;
+width:99%;
+height:48px;
+}
+
+#medio{
+padding-top:5px;
+width: 100%;
+height:75%;
+}
+
+#imagen {
+height: 80%;
+width: 75%;
+position:absolute;
+top:55px;
+left:2px;
+}
+
+#datoscatit {
+width: 24%;
+height: 80%;
+position:absolute;
+top:55px;
+right:2px
+}
+
+#manzana{
+position:absolute;
+top:2px;
+height: 20%;
+width: 96%
+}
+
+#parcelas{
+position:absolute;
+top:150px;
+height: 60%;
+width: 96%
+}
+
+#planos{
+position:absolute;
+bottom:2px;
+width:96%;
+height:20%
+}
+
+#identif{
+border-right: 1px solid gray;
+font: 10px arial;
+width: 100%;
+}
+
+#tabla-izq{
+font: italic 9px arial;
+border-right: 1px solid;
+width:100%
+}
+
+#tabla-der{
+font: italic 9px arial;
+width: 100%;
+}
+
+#tabla-parc{
+font: italic 8px arial;
+}
+
+#tabla-plano{
+font: italic bold 11px arial;
+}
+
+#pie_izq{
+float: left;
+}
+
+#pie_der{
+float: right;
+}
+
+label{
+font: 10px bold;
+height:11px
+}
+
+div.bordes{
+border-width: 1px;
+border-style: solid;
+border-color: black;
+background-color: white;
+width: 100%;
+}
+
+table.bordes {
+border-width: 1px;
+border-style: solid;
+border-color: black;
+background-color: white;
+width: 100%;
+}
+
+td{
+/*border-bottom:1px solid;*/
+/*padding: 1px;*/
+border-color: gray;
+background-color: white;
+}
+
+td.encab-izq{
+width: 25%;
+text-align: center;
+}
+
+td.encab-med{
+width: 40%;
+text-align: center;
+}
+
+td.encab-deri{
+width: 15%;
+text-align: center;
+}
+
+td.encab-derd{
+width: 5%;
+text-align: right;
+}
+
+b.munic {
+font-size: 20px;
+}
+
+b.titulo-grande {
+font-size: 28px;
+}

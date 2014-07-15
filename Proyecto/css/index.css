@@ -1,0 +1,97 @@
+body{
+	background: url(../img/bg_body.gif) repeat-x 0px -30px;
+	margin:20px;
+	padding:0px;
+	font:normal 10pt/12pt Arial, sans-serif;
+	overflow-y:hidden;
+
+}
+
+/*************************box**/
+#toptop{
+margin-top:10px;
+}
+
+#contenido{
+width:100%;
+float: center;
+}  
+#base{
+width:100%;
+clear:both;
+}
+.div{ width:250px;float:center;margin:0 auto 0 auto;}
+.div30{ width:30%;float:left;margin:3px;}
+.div70{ width:70%;float:left;margin:3px;}
+/************************GRAL***/
+TABLE{
+width:200px;
+margin:auto;
+text-align:left;
+}
+th{
+font:bold 11px/11px Arial, sans-serif;
+color:#FFFFFF;
+background:#ff4d00;
+}
+td.al{
+font:normal 10px/11px Arial, sans-serif;
+color:#333333;
+border-bottom:1px solid #ff4d00;
+}
+label{
+width:14%;
+margin:0px;
+padding:0px;
+display:block;
+float:left;
+}
+label_1{
+width:20%;
+margin:0px;
+padding:0px;
+display:block;
+float:left;
+}
+B1{
+font:bold 18px/20px Arial, sans-serif;
+color:#000000;
+}
+/*************************txt**/
+.titulo_item{
+	font:bold 10pt/12pt Arial, sans-serif;
+	color:#ff5400;
+}
+.titulo_itembox{
+	font:bold 10pt/12pt Arial, sans-serif;
+	color:#ffffff;
+}
+/**********************************/
+.box {
+	background: url(../img/roundedcornr_914194_tl.png) no-repeat top left;
+	margin-top:2px;
+}
+.top {
+	background: url(../img/roundedcornr_914194_tr.png) no-repeat top right;
+}
+.bottom {
+	background: url(../img/roundedcornr_914194_bl.png) no-repeat bottom left;
+}
+.bottom div {
+	background: url(../img/roundedcornr_914194_br.png) no-repeat bottom right;
+}
+.content {
+	background: url(../img/roundedcornr_914194_r.png) top right repeat-y;
+}
+
+.top div,.top,
+.bottom div, .bottom {
+	width: 100%;
+	height: 10px;
+	font-size: 1px;
+}
+.content, .bottom {
+	margin-top: -19px;
+	margin-bottom: 1px;
+}
+.content { padding: 0 10px; }

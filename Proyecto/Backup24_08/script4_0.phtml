@@ -1,0 +1,110 @@
+<?PHP
+// Conexión a PostgreSQL.
+
+$dbconn= pg_Connect( "host=localhost dbname=geodata user=postgres password=database" );
+if( !$dbconn )
+{
+echo "No pudo realizar la conexión!";
+exit;
+}
+
+// Consulta a la tabla parcpcht en geodata.
+$query = "SELECT * FROM parcpcht WHERE circunsc = '$circ' and secc = '$secc' and quint ='$quin' and fracc = '$frac' and manz = '$manz';";
+$result = pg_Exec( $dbconn, $query );
+$row = pg_Fetch_Row( $result, 0 );
+$filtro = $row[23];
+$parc = $row[29];
+$superf = $row[2];
+
+//definir map file
+$map_path="c:/ms4w/apps/plancheta_digital/map/";
+$map = ms_newMapObj($map_path."/planchetas1.map");
+
+//para filtrar las parcelas
+$layer= $map->getLayerByName('Parcelas');
+$clasp = $layer->getClass('parcela');
+$clasp->setExpression($filtro);
+
+//para filtrar medidas
+$layer1= $map->getLayerByName('Medidas');
+$clasm = $layer1->getClass('medida');
+$clasm->setExpression($filtro);
+
+// Consulta a la tabla mza709 en geodata.
+$querybox = "SELECT * FROM mza709 WHERE idmza= '$filtro';";
+$resultbox = pg_exec ($dbconn, $querybox);
+$bbox= pg_Fetch_Row($resultbox, 0);
+$minx= $bbox[5];
+$miny= $bbox[6];
+$maxx= $bbox[7];
+$maxy= $bbox[8];
+
+//Extensión de la vista a la manzana 
+$map->setextent($minx-5,$miny-5,$maxx+5,$maxy+5);
+
+//dibujar mapa
+$image=$map->draw();
+$image_url=$image->saveWebImage();
+$escala=$map->drawScaleBar();
+$escala_url=$escala->saveWebImage();
+?>
+
+<HTML>
+ <HEAD>
+
+   <TITLE>Ejemplo 1: Vista de la manzana</TITLE>
+
+ </HEAD>
+
+<body>
+
+<table width="100%" height="450" border="2">
+  <tr> 
+    <td height="55" colspan="2">
+	<a href="http://malvinasargentinas.gov.ar" id="home_href" title="Planchetas" onclick="this.target = '_blank';"><img src="CSS/escmal.png" alt="logo" /></a>
+	<b>Plancheta Digital - Municipalidad de Malvinas Argentinas</b>
+	</td>
+  </tr>
+  <tr>
+    <td width="900" height="600">
+	      <IMG SRC="<? echo $image_url; ?>" width="900" height="600" align="middle" >
+    </td>
+    <td width="20%">
+	 <?PHP
+	  if( !$row)
+	   {
+	   echo "No hay plancheta para esta nomenclatura o no existe la nomenclatura ingresada!";
+	   exit;
+	   }
+	  else
+	   {
+       ?>
+	  <table width="100%">
+
+	   <tr><?php echo "Parcela= $parc<BR>"; ?></tr>
+
+	   <tr><?php echo "Superficie= $superf<BR>"; ?></tr>
+
+	  </table>
+
+	 <?php
+	   }
+	  pg_Close( $dbconn );
+	 ?>
+    </td>
+  </tr>
+  <tr>
+    <td height="40">
+	      <IMG SRC="<? echo $escala_url; ?>" >
+    </td>
+    <td>
+
+    <div style="float:right; margin:4px 10px 1px 3px ;"><a href="http://mapserver.gis.umn.edu" id="mapserver_href_2" onclick="this.target = '_blank';"><img src="CSS/powered_mapserver.png" title="UMN MapServer homepage" alt="MapServer" /></a></div>
+    <div style="float:right; margin:8px 10px 1px 3px ;"></div>
+    
+    </td>
+  </tr>
+</table>
+
+ </BODY>
+</HTML>

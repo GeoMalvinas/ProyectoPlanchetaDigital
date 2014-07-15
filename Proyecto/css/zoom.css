@@ -1,0 +1,54 @@
+/*
+	 CSS-Tricks Example
+	 by Chris Coyier
+	 http://css-tricks.com
+*/
+
+* { margin: 0; padding: 0; }
+
+/* h1 { font: bold 32px Helvetica, Sans-Serif; letter-spacing: -1px; margin: 0 0 15px 0; } */
+
+article, aside, figure, footer, header, hgroup,
+menu, nav, section { display: block; }
+
+.group:after { visibility: hidden; display: block; font-size: 0; content: " "; clear: both; height: 0; }
+
+#page-wrap { width: 660px; margin: 60px auto; }
+
+.image-gallery { margin: 20px 0 25px 0; }
+
+figure { 
+  width: 800px; 
+  float: left; 
+  margin: 0 20px 0 0; 
+  background: white;
+/*  border: 10px solid white; */
+  -webkit-box-shadow: 0 3px 10px #ccc; 
+  -moz-box-shadow: 0 3px 10px #ccc;
+  -webkit-transition: all 0.7s ease; 
+  -moz-transition: all 1s ease;
+  position: relative;
+}
+
+figcaption { 
+  text-align: center; 
+  display: block; 
+  font-size: 12px; 
+  font-style: italic; 
+}
+
+figure img { 
+  width: 100%; /* Scale down */
+}
+
+figure:hover {
+    -webkit-transform: rotate(1deg); -moz-transform: rotate(1deg);
+    -webkit-box-shadow: 0 3px 10px #666; -moz-box-shadow: 0 3px 10px #666;
+}
+
+figure:focus {
+    outline: none;
+    -webkit-transform: rotate(-1deg) scale(1.5); -moz-transform: rotate(-1deg) scale(1.5);
+    -webkit-box-shadow: 0 3px 10px #666; -moz-box-shadow: 0 3px 10px #666;
+    z-index: 9999;
+}

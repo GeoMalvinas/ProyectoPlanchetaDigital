@@ -1,0 +1,496 @@
+/******************************************************************************
+ *
+ * Purpose: styles for basic layout elements
+ * Author:  Armin Burger
+ *
+ ******************************************************************************
+ *
+ * Copyright (c) 2003-2006 Armin Burger
+ *
+ * This file is part of p.mapper.
+ *
+ * p.mapper is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version. See the COPYING file.
+ *
+ * p.mapper is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with p.mapper; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ ******************************************************************************/
+ 
+body {
+    overflow: hidden;
+    margin: 0px 0px ;
+    padding: 0px 0px;
+    width: 100%;
+    border: none;
+}
+
+.baselayout {position: absolute; border: none;}
+
+#general {position: absolute; overflow:hidden; z-index: 15; background-color: #0000ee;}
+
+#north {position:absolute; overflow:hidden; z-index:16;}
+#south {position:absolute; overflow:hidden; z-index:16;}
+#east  {position:absolute; overflow:hidden; z-index:15; border:1px solid #efefef;}
+#west  {position:absolute; overflow:auto; z-index:15; }
+
+#mapZone  {position:absolute; overflow:hidden; z-index:10; border:1px solid #efefef;}
+#mapNorth {position:absolute; overflow:visible; z-index:15;}
+#mapSouth {position:absolute; overflow:hidden; z-index:15;}
+#mapWest  {position:absolute; overflow:hidden; z-index:15;}
+#mapEast  {position:absolute; overflow:hidden; z-index:15;}
+#map      {position:absolute; overflow:hidden; z-index:15;}
+
+#refZone  {position:absolute; overflow:hidden; z-index:15; border:1px solid #efefef;}
+#infoZone {position:absolute; overflow:hidden; z-index:15; border:1px solid #efefef;}
+
+
+/* =================================================================*/
+
+
+#mapimgLayer {
+    position: absolute;
+    z-index : 0; /* IMPOTANT FOR MEASURE FUNCTION */
+	overflow: hidden;
+}
+
+#infoFrame {
+	visibility: hidden;
+    position: absolute;
+	overflow: auto;
+    width: auto;
+    height: auto;
+    z-index : 90;
+	padding: 4px;
+}
+
+#loading {
+    position: absolute;
+    z-index : 95;
+}
+
+#scalebar {
+    position: absolute;
+    z-index : 95;
+    visibility: hidden;
+    left:150px;
+    top:0px;
+    width:200px;
+    height:30px;
+    background:#eeeeee;
+    layer-background-color:#eeeeee;
+    /*filter: alpha(opacity=40); 
+    -moz-opacity:0.4;*/
+}
+
+#mapToolArea {
+    position: absolute;
+    left : 0px;
+    width: 100%;
+    overflow: hidden;
+    z-index : 10;
+	text-align: right;
+}
+
+
+#topMapFrame {
+    position: absolute;
+    left : 0px;
+    top : 0px;
+    width: 100%;
+    height: 40px;
+    z-index : 3;
+}
+
+.zoombox {
+    position: relative;
+    visibility: visible;
+    width: 1px;
+    height: 1px;
+    border-color : #FF0000;
+    border-width : 1px;
+	border-style : solid;
+    z-index:90;
+    background:#eeeeee;
+    layer-background-color:#eeeeee;
+    filter: alpha(opacity=40); 
+    -moz-opacity:0.4;
+}
+
+/* STYLE FOR ZOOMBOX FOR OPERA AND KONQUEROR */
+.zoombox_nontransp {
+    position: absolute;
+    visibility: hidden;
+    overflow: hidden;
+    left : 0;
+    top : 0;
+    border-color: #FF0000;
+    border-width: 1px;
+    border-style: solid;
+} 
+
+
+#toolBar {
+    position: absolute;
+    right : 0px;
+    top : 0px;
+    width:100%; 
+    height:100%;
+    z-index : 5;
+	overflow: hidden;
+    /*-moz-border-radius: 0px 12px 12px 0px ;*/
+}
+
+#toolMenu {
+    position:absolute; 
+    top:6px; 
+    right:30px; 
+    overflow:visible    
+}
+
+
+/* STYLE FOR MEASURE ELEMENTS */
+#measureLayer {
+    position:absolute;
+    top: 0px;
+    left : 0px;
+    visibility: visible;
+    z-index:94;
+}
+
+#measureLayerTmp {
+    z-index:94;
+}
+
+
+/* STYLE FOR REFERENCE MAP */
+.refmap {
+    position:absolute; 
+    left:5px; 
+    top:4px;
+    z-index:9
+}
+
+/* STYLE FOR REFERENCE MAP BOX */
+.refbox {
+    visibility: visible;
+    overflow: hidden;
+    position: absolute;
+    border-color : #FF0000;
+    border-width : 2px;
+    border-style : solid;
+}
+
+
+/* STYLE FOR REFERENCE MAP CROSS */
+#refcross, .refcrossimg  {
+    visibility: hidden;
+    position: absolute;
+    z-index:90;
+}
+
+
+/* STYLE FOR REFERENCE MAP BOX */
+.sliderbox {
+    visibility: hidden;
+    overflow: hidden;
+    position: absolute;
+    border-color : #FF0000;
+    border-width : 1px;
+    border-style : solid;
+    background:#eeeeee;
+    layer-background-color:#eeeeee;
+    filter: alpha(opacity=60); 
+    -moz-opacity:0.6;
+}
+
+.ref {
+    position: absolute;
+}
+
+
+/* Coordinates Display */
+#showcoords {
+    visibility: visible;
+    /*position: absolute;
+    left : 4px;
+    top : 4px;	
+	z-index: 80;*/
+	float: left;
+    width: auto;
+    height: 18px;
+	margin: 6px 10px;
+}
+#xcoord {
+    /*position: absolute;
+    left : 10px;
+    top : 2px;*/
+	float:left;
+	padding: 2px 8px;
+}
+#ycoord {
+    /*position: absolute;
+    left : 80px;
+    top : 2px;*/
+	float:left;
+	padding: 2px 8px;
+}
+
+
+#selform TABLE{
+	height: 20px;
+}
+
+
+
+/*** IQuery ***/
+#iqueryLayer {
+	visibility: hidden;
+    position: absolute;
+    right: 4px;
+    top: 5px;
+	overflow: hidden;
+    width: 180px;
+    height: auto;
+    z-index : 96;
+}
+
+.iquery {
+	background:#D1D1D1;
+	layer-background-color:#D1D1D1;
+	filter: alpha(opacity=80); 
+	-moz-opacity:0.8;
+	border-width:1px; 
+	border-color:#AEAEAE; 
+	border-style:inset;
+	padding: 4px;
+	
+}
+.iquery TH.header {
+	color: #000080;
+	border-bottom: 2px groove #666666;
+	padding-left: 1px;
+
+}
+.iquery TD {
+	padding-left: 2px;
+	vertical-align:top;
+	/*border-top:  1px solid #000000;*/
+
+}
+.iquery TH {
+	padding-left: 4px;
+	vertical-align:top;	
+}
+
+
+/*** Styles for SCALE selection ***/
+#scaleArea {
+	position:absolute; 
+	z-index:90; 
+	overflow: visible;
+	left: 4px; 
+	top: 42px;
+	width: 130px; 
+	padding: 1px 4px 1px 3px;
+	border: 1px inset #999999;
+	background-color:#e2e2e2;
+    layer-background-color:#e2e2e2;
+	-moz-opacity:0.8; 
+}
+
+#scaleArea2 {
+    white-space: nowrap;
+}
+
+.scale_link {
+	background-color: #EBEBEB;
+	padding: 1px 4px 1px 4px;
+	cursor: pointer;
+	z-index : 91;
+}
+.scale_link_over {
+	color: #FFFFFF;
+	background-color: #003366;
+	padding: 1px 4px 1px 4px;
+	cursor: pointer;
+	z-index : 91;
+}
+#scale_suggest {
+	position: absolute; 
+	background-color: #EBEBEB; 
+	text-align: right; 
+	border: 1px solid #003366;
+	height: auto;
+	width: 72px;
+	overflow: visible;
+	z-index : 91;
+	visibility: hidden;
+}	
+
+
+/*** Table style formatting of DIV's***/
+.celldiv {
+	float:left;/*fix for  buggy browsers*/
+	display: table-cell;
+	padding: 1px;
+}
+.rowdiv {
+	display: table-row;
+	width:auto;
+}
+
+
+/*** Slider ***/
+#sliderArea {
+	position:absolute; 
+	z-index:90; 
+	left:4px; 
+	top:90px;
+	width:30px; 
+	height:200px; 
+	margin-top:5px; 
+	border: 1px solid #999999;
+	background-color:#e2e2e2; 
+	layer-background-color:#e2e2e2;
+	-moz-border-radius: 15px;	
+}
+#zslider {
+    display:table-row;
+}
+#sliderTool {
+    position:absolute; 
+    left:7px; 
+    top:12px; 
+    display:table;
+}
+.sliderAreaOver {
+	filter: alpha(opacity=95); 
+	-moz-opacity:0.95;
+}
+.sliderAreaOut {
+	filter: alpha(opacity=70); 
+	-moz-opacity:0.7;
+}
+.slider_top {
+	width:14px; 
+	height:15px; 
+	/*display:table-row;*/
+	background-color:#eeeeee; 
+	border: 1px solid #000000;
+	-moz-border-radius: 8px 8px 0px 0px;
+}
+.slider_bottom {
+	width:14px; 
+	height:15px; 
+	/*display:table-row;*/
+	background-color:#eeeeee; 
+	border: 1px solid #000000;
+	-moz-border-radius: 0px 0px 8px 8px ;
+}
+
+
+/*** help messages ***/
+#helpMessage {
+	position:absolute; 
+    right:10px; 
+    top:4px;
+    width: auto;
+    height: auto;
+    visibility: hidden;
+    z-index : 92;
+    background:#D1D1D1;
+    color: #000080;
+	layer-background-color:#D1D1D1;
+	filter: alpha(opacity=80); 
+	-moz-opacity:0.8;
+    border:none;
+	padding: 4px;
+}
+
+
+/**
+ * for DHTML menu
+ * based on a script by Jonathan Sharp
+ */
+.pm_menu, .pm_menu_button, a.pm_menu_button {
+	font-size: 11px;
+	text-decoration: none;
+	text-align: left;
+    padding: 0px;
+	cursor: pointer;
+}
+a.pm_menu_button {
+    display: block;
+    width: auto;
+    padding: 4px;   
+    color: #000000;
+    border: 1px solid #003366;
+}
+a.pm_menu_button:hover {
+    display: block;
+    width: auto;
+    padding: 4px;
+    color: #ffffff;
+    background-color: #003366;
+    border: 1px outset #f0f0f0;
+}
+.pm_menu_button img{
+    padding: 0px 8px 0px 8px;
+}
+.pm_menu {
+	display: none;
+	position: absolute;
+	width: 90px;
+	list-style-type: none;
+	margin: 0px;
+	color: #000000;
+    background-color: #f0f0f0;
+    border: 1px solid #003366;
+}
+.pm_menu li {
+	border-top: 1px solid #999999;
+	padding: 5px 2px 5px 4px;
+}
+.pm_menu_active {
+	display: block;
+}
+.pm_menu .pm_menu_hover {
+	color: #FFFFFF;
+    background-color: #003366;
+}
+
+
+
+.pm_button {
+	display:inline;
+	text-decoration: none;
+	text-align: left;
+	cursor: pointer;
+    width: auto;
+    padding: 2px 6px;   
+    color: #000000;
+    background-color: #ebebeb;
+    border: 1px solid #003366;
+}
+
+a.pm_button:hover {
+    text-decoration: none;
+    width: auto;
+    padding: 2px 6px;
+    color: #ffffff;
+    background-color: #003366;
+    border: 1px outset #f0f0f0;
+}
+
+
+
+

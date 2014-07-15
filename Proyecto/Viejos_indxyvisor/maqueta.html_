@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+ <HEAD>
+  <TITLE> Plancheta Digital - Municipalidad de Malvinas Argentinas </TITLE>
+	<link rel="icon" href="img/icon.gif" type="image/x-icon" />  
+	<link rel="shortcut icon" href="img/icon.gif" type="image/x-icon" />
+	<link rel="STYLESHEET" type="text/css" href="css/estilonuevo.css">
+	<link rel="STYLESHEET" type="text/css" media="print" href="css/imprimir.css"> 
+ </HEAD>
+<BODY>
+	<div id="encabezado" class="bordes">
+		<table>
+			<tr>
+			 <td class="encab-izq">
+				<B class="munic">Municipalidad de Malvinas Argentinas</B><br>
+				<label>Dirección Gral. de Planeamiento - Dirección de Catastro</label>
+			 </td>
+			 <td class="encab-med">	
+				<B class="titulo-grande">CATASTRO PARCELARIO</B>
+			 </td>
+			 <td class="encab-deri">
+				<label>Localidad:</label><B height="22px">Grand Bourg<? echo "$qloca"; ?></B><br>
+				<label>Barrio: </label><B height="20px">Pami</B>
+			 </td>
+			 <td class="encab-derd">
+				<label>Id-Mza:<br><B>4532</B></label>
+			 </td>
+			</tr>
+		</table>
+	</div>	
+	<div id="imagen" align="center"class="bordes">
+				 <IMG SRC="<? echo $image_url; ?>" height="98%" -position="left"><BR>
+	</div>
+   <div id="datoscatit">
+	<div id="manzana" class="bordes">
+	 <table>
+	  <tr>
+	   <td width="49%">
+	    <P class="titulo_item">Título</p>
+	   </td>
+	   <td width="49%">
+	    <P class="titulo_item">Catastro</p>
+	   </td>
+	  </tr>
+	  <tr>
+	   <td>
+		<table>
+			<tr>
+				 <td><label>Circ:</label> </td>
+				 <td><B>4</B></td>
+			</tr>
+			<tr>
+				 <td><label>Secc:</label> </td>
+				 <td><B>R</B></td>
+			</tr>
+			<tr>
+				<td> <label>Quinta:</label> </td>
+				<td> <B>6</B></td>
+			</tr>
+			<tr>
+				<td><label>Fracc:</label> </td>
+				<td><B>0</B></td>
+			</tr>
+			<tr>
+				<td><label>Mza s/Tit.:</label> </td>
+				<td><B>6a</B></td>
+			</tr>
+		</table>
+	   </td>
+	   <td>
+		<table>
+			<tr>
+				 <td><label>Circ:</label> </td>
+				 <td><B>4</B></td>
+			</tr>
+			<tr>
+				 <td><label>Secc:</label> </td>
+				 <td><B>R</B></td>
+			</tr>
+			<tr>
+				<td> <label>Quinta:</label> </td>
+				<td> <B>6</B></td>
+			</tr>
+			<tr>
+				<td><label>Fracc:</label> </td>
+				<td><B>0</B></td>
+			</tr>
+			<tr>
+				<td><label>Mza:</label> </td>
+				<td><B>6a</B></td>
+			</tr>
+		</table>
+	   </td>
+	  </tr>
+	 </table>
+	</div>
+
+	<div id="parcelas" class="bordes">
+				 <TABLE>
+				  <TBODY>
+					<TR border="solid">
+					  <TD width="9%" align="right">Parc</TD>
+					  <TD width="9%" align="right">Lote</TD>
+					  <TD width="23%" align="center">Sup.</TD>
+					  <TD width="9%" align="right">Zon.</TD>
+					  <TD width="9%" align="right">Parc</TD>
+					  <TD width="9%" align="right">Lote</TD>
+					  <TD width="23%" align="center">Sup.</TD>
+					  <TD width="9%" align="right">Zon.</TD>
+					</TR>
+					<TR>
+					  <TD colspan="4" valign="top">
+						<TABLE>				
+						 <TR>
+						  <TD width="18%" align="right">1</TD>
+						  <TD width="18%" align="right">1</TD>
+						  <TD width="45%" align="right">300.00</TD>
+						  <TD width="18%" align="right">R4</TD>
+						 </TR>
+						</TABLE>
+					  </TD>
+					  <TD colspan="4" valign="top">
+						<TABLE>
+						 <TR>
+						  <TD width="18%" align="right">22</TD>
+						  <TD width="18%" align="right">22</TD>
+						  <TD width="45%" align="right">300.00</TD>
+						  <TD width="18%" align="right">Cs2</TD>
+					     </TR>
+						</TABLE>
+					  </TD>
+					 </TR>
+					</TBODY>
+				</TABLE>
+	</div>
+	<div id="planos" class="bordes">
+				 <TABLE>
+				  <TBODY>
+					<TR border="solid">
+					  <TD width="9%" align="right">Tipo</TD>
+					  <TD width="9%" align="right">Nro-Plano</TD>
+					  <TD width="23%" align="center">Afecta</TD>
+					</TR>
+					<TR>
+					  <TD colspan="3" valign="top">
+						<TABLE width="100%">				
+						 <TR>
+						  <TD width="18%" align="right">Origen</TD>
+						  <TD width="36%" align="right">48-118-64</TD>
+						  <TD width="45%" align="right">-</TD>
+						 </TR>
+						</TABLE>
+					  </TD>
+					 </TR>
+					</TBODY>
+				</TABLE>
+	</div>
+  </div>
+ <div id="pie"> 
+  <TABLE>
+   <TR>
+    <TD>
+    </TD>
+    <TD>
+    </TD>
+   </TR>
+  </TABLE>
+ </div>
+</BODY>
+</HTML>

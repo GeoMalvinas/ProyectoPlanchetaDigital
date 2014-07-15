@@ -1,0 +1,112 @@
+#cabeza{
+width:100%;
+background-color: rgb(240,240,240);
+}
+
+#tabla-izq{
+font: italic 8px arial;
+width:100%;
+empty-cells:show;
+}
+
+#tabla-der{
+font: italic 8px arial;
+width: 100%;
+empty-cells:show;
+}
+
+#nomenclat{
+font: bold 8px arial;
+empty-cells:show;
+padding-bottom:0px;
+padding-top: 0px;
+padding-right: 1px;
+padding-left: 1px;
+}
+
+#tabla-parc{
+font: italic 8px arial;
+width:100%
+}
+
+#tabla-planos{
+font: italic bold 8px arial;
+}
+
+#pie_izq{
+float: left;
+}
+
+#pie_der{
+float: right;
+}
+
+#encab-izq{
+width: 25%;
+text-align: center;
+}
+
+#encab-med{
+width: 30%;
+text-align: center;
+}
+
+#encab-deri{
+width: 35%;
+text-align: left;
+}
+
+#encab-derd{
+width: 10%;
+text-align: right;
+}
+
+label{
+font: 12px verdana;
+}
+
+b{
+font: 12px verdana;
+}
+
+table.bordes {
+border: 1px solid black;
+background-color:  rgb(230,230,230);
+width: 100%;
+}
+
+table.tbplanos{
+font: italic bold 8px verdana;
+empty-cells:show;
+}
+
+td.td-parc{
+/*border-bottom:1px solid;*/
+/*padding: 1px;*/
+border-top: 1px solid gray;
+padding-bottom:0px;
+padding-top: 0px;
+padding-right: 1px;
+padding-left: 1px;
+}
+
+td.enc-parc{
+font: 9px arial;
+padding-bottom:0px;
+padding-top: 0px;
+padding-right: 1px;
+padding-left: 1px;
+/*border-bottom: solid 1px rgb(50,50,50);*/
+}
+
+b.munic {
+font: bold 18px verdana;
+}
+
+b.admin {
+font:bold 16px verdana;
+}
+
+b.titulo-grande {
+font-size: 16px;
+}

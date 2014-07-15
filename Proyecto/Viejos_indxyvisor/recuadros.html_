@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+ <HEAD>
+  <TITLE> Plancheta Digital - Municipalidad de Malvinas Argentinas </TITLE>
+	<link rel="icon" href="img/icon.gif" type="image/x-icon" />  
+	<link rel="shortcut icon" href="img/icon.gif" type="image/x-icon" />
+	<link rel="STYLESHEET" type="text/css" href="css/estilorecuadros.css">
+	<link rel="STYLESHEET" type="text/css" media="print" href="css/imprimir.css"> 
+ </HEAD>
+<BODY>
+	<div id="encabezado" class="bordes">
+
+	</div>	
+	<div id="derecha">
+	 <div id="imagen" align="center"class="bordes">
+	 			 <IMG SRC="<? echo $image_url; ?>"><BR>
+	 </div>
+	 <div id="pie" class="bordes"> 
+	 </div>
+	</div>
+	<div id="datoscatit">
+	  <div id="manzana" class="bordes">
+	  </div>
+
+	  <div id="parcelas" class="bordes">
+
+	  </div>
+	  <div id="planos" class="bordes">
+	   <table class="" id="" style="empty-cells:hide">
+	    <tr>
+		 <td class="izquierda">A</td>
+		 <td>B</td>
+		</tr>
+	    <tr>
+		 <td class="izquierda">A</td>
+		 <td>B</td>
+		</tr>		
+	   </table>
+	  </div>
+	 </div>
+</BODY>
+</HTML>

@@ -1,0 +1,39 @@
+/* STYLE FOR PRINT OUTPUT */
+
+/* General settings for HTML print, especially legend */
+
+BODY {
+    background : white;
+    color: black;
+}
+
+TH {
+    font-size: 11px;
+    font-weight: bold;
+    text-align: left;
+}
+
+TD {
+    font-size: 11px;
+    text-align: left;
+}
+
+
+/* Print Title */
+.PRTITLE {
+    background-color: #336699;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Print Dialog Window */
+.PRDLG {background-color: #B1BBC5;}
+
+.PRDLG TABLE {
+    width: 100%;
+}
+
+.PRDLG TH, .PRDLG TD {
+    font-size: 12px;
+}

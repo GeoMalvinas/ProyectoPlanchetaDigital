@@ -1,0 +1,110 @@
+@page{
+size: legal landscape;
+margin: .5cm .5cm;
+padding: 0 !important;
+}
+
+figure {
+width: 730px !important;
+height: 430px !important;
+float: left;
+}
+
+img {
+  width: 730px;
+  height: 430px;
+}
+
+.btn {
+  display: none !important;
+}
+
+.modal {
+  display: none !important;
+}
+
+.navbar {
+display: none;
+}
+  
+body {
+margin: 0 !important;
+padding: 0;
+font-size: 8pt;
+width: 34cm;
+height: 20.5cm;
+}
+.container{
+margin: 0;
+padding: 0;
+max-width: 35cm;
+}
+
+.table {
+    margin: 1px;
+    width: 100%;
+}
+.col-lg-18{
+max-width: 34cm;
+}
+
+.col-lg-17 {
+    max-width: 34cm;
+    position: fixed;
+    bottom: .5cm;
+}
+
+.arriba{
+position: fixed;
+top: 0.1cm;
+right: .5cm;
+}
+
+.abajo{
+position: fixed;
+top: 4.5cm;
+right: .5cm;
+direction: ltr;
+
+}
+
+.equip{ /* equipamiento */
+
+  width: 10cm;
+  position: fixed;
+  right: .10cm;
+  border-top: transparent;
+  top: inherit;
+}
+
+.col-md-3{ /* barrio, idmza */
+width: 10cm;
+padding: .50cm;
+position: absolute; /* Estaba en fixed. Con absolute se movio a la derecha como queriamos. */
+right: .10cm;
+
+}
+.col-md-4,
+
+.infra{
+
+  padding: 10px;
+  width: 1024px;
+
+  padding-top: 100px;
+  padding-left: 60px;
+  padding-right: 60px;
+
+
+}
+
+.col-md-6,
+
+.col-md-8{ /* todo */
+position: absolute;
+/*top: 1px;*/
+left: -1px;
+width: 0cm;
+height: 0cm;
+}
+

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title> - jsFiddle demo by braziel</title>
+  
+  <script type='text/javascript' src='//code.jquery.com/jquery-1.10.1.js'></script>
+  
+  
+  
+  <link rel="stylesheet" type="text/css" href="/css/result-light.css">
+  
+  <style type='text/css'>
+    canvas {
+    border:1px solid grey;
+    background-color:#FFFFFF;
+}
+img {
+    display:none;
+}
+  </style>
+
+<script type='text/javascript'>//<![CDATA[ 
+$(function(){
+var canvas = document.getElementById('canvas');
+var image = document.getElementById('image');
+var element = canvas.getContext("2d");
+
+//set delta for zoom and keep track of current zoom
+var zoomDelta = 0.1;
+var currentScale = 1;
+
+//set delta for rotation and keep of current rotation
+var currentAngle = 0;
+var startX, startY, isDown = false;
+
+jQuery('#carregar').click(function () {
+    element.translate(canvas.width / 2, canvas.height / 2);
+
+    //the new refactored function common to all steps
+    drawImage();
+
+    jQuery('#canvas').attr('data-girar', 0);
+    this.disabled = true;
+});
+
+jQuery('#giraresq').click(function () {
+    angleInDegrees = -90;
+    currentAngle += angleInDegrees;
+    drawImage();
+});
+
+jQuery('#girardir').click(function () {
+    angleInDegrees = 90;
+    currentAngle += angleInDegrees;
+    drawImage();
+});
+
+jQuery('#zoomIn').click(function () {
+    currentScale += zoomDelta;
+    drawImage();
+});
+jQuery('#zoomOut').click(function () {
+    currentScale -= zoomDelta;
+    drawImage();
+});
+
+canvas.onmousedown = function (e) {
+    var pos = getMousePos(canvas, e);
+    startX = pos.x;  //store current position
+    startY = pos.y;
+
+    isDown = true;   //mark that we are in move operation
+}
+
+canvas.onmousemove = function (e) {
+    if (isDown === true) {
+        var pos = getMousePos(canvas, e);
+        var x = pos.x;
+        var y = pos.y;
+
+        //translate difference from now and start
+        element.translate(x - startX, y - startY);
+        drawImage();
+            
+        //update start positions for next loop
+        startX = x;
+        startY = y;
+    }
+}
+
+//reset move operation status
+canvas.onmouseup = function (e) {
+    isDown = false;
+}
+
+function getMousePos(canvas, evt) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+        x: evt.clientX - rect.left,
+        y: evt.clientY - rect.top
+    };
+}
+
+// Function to clear canvas
+function clear() {
+    element.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function drawImage() {
+    clear();
+    element.save(); //as we now keep track outselves of angle/zoom due to
+                    //translation, we can use save/restore
+    element.scale(currentScale, currentScale);
+    element.rotate(currentAngle * Math.PI / 180);
+    element.drawImage(image, -image.width / 2, -image.width / 2);
+
+    element.restore();
+}
+});//]]>  
+
+</script>
+    <?php
+        // Se obtiene el valor pasado por el parametro 'par'
+        $var = $_GET['imag'];
+    ?>
+
+</head>
+<body>
+  <button id="carregar">Load Imagem</button>
+  <button id="zoomIn">+</button>
+  <button id="zoomOut">-</button>
+  <canvas id="canvas" height="450" width="750" data-girar="0" data-scale="0">
+  
+  </canvas>
+  <img src="<?php echo $var; ?>" id="image" width="750" height="450" />
+  
+</body>
+
+
+</html>

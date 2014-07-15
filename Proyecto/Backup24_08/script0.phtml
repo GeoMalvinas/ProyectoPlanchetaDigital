@@ -1,0 +1,68 @@
+<?PHP
+//definir map file
+$map_path="c:/ms4w/apps/plancheta_digital/map/";
+$map = ms_newMapObj($map_path."/planchetas.map");
+
+// add new layer to map
+$layer = ms_newLayerObj($map);
+$layer->set("name", "Parcelas");
+$layer->set("status", MS_ON);
+$layer->set("data", "C:/ms4w/apps/plancheta_digital/datos/parcelas.shp");
+$layer->set("type", MS_LAYER_POLYGON);
+$layer->setProjection("init=epsg:22195");
+$layer->set("template", "ttt");
+$layer->set("dump", "true");
+$layer->set("classitem", "IDMZA");
+
+// add new class to new layer
+$class = ms_newClassObj($layer);
+$class->set("name", "POLYDRO");
+$class->setExpression("937");
+
+// add new style to new class
+$style = ms_newStyleObj($class);
+$style->set("symbol", 0);
+$style->set("size", 1);
+$style->outlinecolor->setRGB(0,0,0);
+
+// add new layer to map
+$layer1 = ms_newLayerObj($map);
+$layer1->set("name", "Barrios");
+$layer1->set("status", MS_ON);
+$layer1->set("data", "C:/ms4w/apps/plancheta_digital/datos/barrios.shp");
+$layer1->set("type", MS_LAYER_POLYGON);
+$layer1->setProjection("init=epsg:22195");
+$layer1->set("template", "ttt");
+$layer1->set("dump", "true");
+$layer1->set("classitem", "BARRIO");
+
+// add new class to new layer
+$class1 = ms_newClassObj($layer1);
+$class1->set("name", "BARRIO");
+$class1->setExpression("YAPEYU");
+
+// add new style to new class
+$style1 = ms_newStyleObj($class1);
+$style1->set("symbol", 1);
+$style1->set("size", 3);
+$style1->color->setRGB(255, 153, 255);
+
+
+
+//Extensión de la vista 
+$map->setextent(5612674.523,6184691.462,5612844.786,6184792.799);
+
+//dibujar mapa
+$image=$map->draw();
+$image_url=$image->saveWebImage();
+
+?>
+
+<HTML>
+ <HEAD>
+   <TITLE>Ejemplo 1: Vista de la manzana</TITLE>
+ </HEAD>
+ <BODY>
+   <IMG SRC="<? echo $image_url; ?>" >
+ </BODY>
+</HTML>
